@@ -56,49 +56,73 @@ const uncover = (id) =>{
     }
 
     uncoveredCard++;
+
     if(uncoveredCard === 1){
         // mostrar primer numero
-        card1 = document.getElementById(id);
-        firstResult = numbers[id];
-        card1.innerHTML = `<img src="/src/assets/images/${firstResult}.png" alt="${firstResult}">`;
-        clickAudio.play();
-        // deshabilitar y cambiar de color primer boton
-        card1.disabled = true;
+        uncoverFirstCard(id);
+
     }else if(uncoveredCard === 2){
         // mostrar segundo numero
-        card2 = document.getElementById(id);
-        secondResult = numbers[id];
-        card2.innerHTML = `<img src="/src/assets/images/${secondResult}.png" alt="${secondResult}">`;
-        // deshabilitar y cambiar de color segundo numero
-        card2.disabled = true;
-        counterMovements++;
-        movements.textContent = `Movements: ${counterMovements}`;
+        uncoverSecondCard(id);
 
-        if(firstResult === secondResult){
-            // resetear contador uncover card
+        // evaluar el primer resultado con el seundo resultado
+        checkResults();
+    }
+}
+
+// uncover first card
+const uncoverFirstCard = (id) =>{
+    card1 = document.getElementById(id);
+    firstResult = numbers[id];
+    card1.innerHTML = `<img src="/src/assets/images/${firstResult}.png" alt="${firstResult}">`;
+    clickAudio.play();
+    // deshabilitar y cambiar de color primer boton
+    card1.disabled = true;
+}
+
+// uncover second card
+const uncoverSecondCard = (id) =>{
+    card2 = document.getElementById(id);
+    secondResult = numbers[id];
+    card2.innerHTML = `<img src="/src/assets/images/${secondResult}.png" alt="${secondResult}">`;
+    // deshabilitar y cambiar de color segundo numero
+    card2.disabled = true;
+    counterMovements++;
+    movements.textContent = `Movements: ${counterMovements}`;
+}
+
+// evaluar primer resultado con el segundo resultado
+const checkResults = () => {
+    if(firstResult === secondResult){
+        // resetear contador uncover card
+        uncoveredCard = 0;
+        // aumentar hits
+        counterHits++;
+        hits.textContent = `Hits: ${counterHits}`;
+        rightAudio.play();
+
+        // show win result
+        win();
+
+    }else{
+        wrongAudio.play();
+        // mostrar momentaneamente valores y volver a tapar
+        setTimeout(() => {
+            card1.innerHTML = '';
+            card1.disabled = false;
+            card2.innerHTML = '';
+            card2.disabled = false;
             uncoveredCard = 0;
-            // aumentar hits
-            counterHits++;
-            hits.textContent = `Hits: ${counterHits}`;
-            rightAudio.play();
-            if(counterHits === 8){
-                winAudio.play();
-                clearInterval(counterTimer);
-                hits.textContent = `Hits: ${counterHits} 😮`;
-                movements.textContent = `Movements: ${counterMovements} 😎`;
-                timeReminning.textContent = `Super! you only discouraged ${initialTimer - timer} seconds 🎉🎈`;
-            }
+        },800);
+    }
+}
 
-        }else{
-            wrongAudio.play();
-            // mostrar momentaneamente valores y volver a tapar
-            setTimeout(() => {
-                card1.innerHTML = '';
-                card1.disabled = false;
-                card2.innerHTML = '';
-                card2.disabled = false;
-                uncoveredCard = 0;
-            },800);
-        }
+const win = () =>{
+    if(counterHits === 8){
+        winAudio.play();
+        clearInterval(counterTimer);
+        hits.textContent = `Hits: ${counterHits} 😮`;
+        movements.textContent = `Movements: ${counterMovements} 😎`;
+        timeReminning.textContent = `Super! you only discouraged ${initialTimer - timer} seconds 🎉🎈`;
     }
 }
